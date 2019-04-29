@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'askappdb',
         'USER':  'askapp',
-        'PASSWORD': 'password',
+        'PASSWORD': 'passwrd123',
     }
 }
 
