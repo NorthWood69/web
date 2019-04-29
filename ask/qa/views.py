@@ -12,7 +12,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 
 @require_GET
-def index(request, *args, **kwargs):
+def idx(request, *args, **kwargs):
     question_list = Question.objects.order_by('-id')
     paginator, page, limit = paginate(request, question_list)
     context = {
@@ -35,7 +35,7 @@ def popular(request, *args, **kwargs):
 
 def test(request, *args, **kwargs):
     context = {'var1': 1, 'var2': 2}
-    #return render(request, 'qa/index.html', context)
+    #return render(request, 'index.html', context)
     return HttpResponse('OK')
 
 def question(request, question_id):
@@ -45,3 +45,24 @@ def question(request, question_id):
     form = AnswerForm(initial = {'question': question_id})
     context = {'question': q, 'answers': a, 'form': form, }
     return render(request, 'question.html', context)
+
+def paginate(request, lst):
+    # get limit
+    try:
+        limit = int(request.GET.get('limit', 10))
+    except ValueError:
+        limit = 10
+    # if limit is too high, normalize it
+    if limit > 100:
+        limit = 10
+    paginator = Paginator(lst, limit)
+    # get current page
+    try:
+        page = int(request.GET.get('page', 1))
+    except ValueError:
+        raise Http404
+    try:
+        page = paginator.page(page)
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    return paginator, page, limit
