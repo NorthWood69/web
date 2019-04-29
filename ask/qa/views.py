@@ -40,8 +40,8 @@ def test(request, *args, **kwargs):
 
 def question(request, question_id):
     q = get_object_or_404(Question, id=question_id)
-    a = q.answer_set.all()
-    #a = Answer.objects.filter(question=question_id).order_by('-added_at')
+    #a = q.answer_set.all()
+    a = Answer.objects.filter(question=question_id).order_by('-added_at')
     form = AnswerForm(initial = {'question': question_id})
     context = {'question': q, 'answers': a, 'form': form, }
     return render(request, 'question.html', context)
