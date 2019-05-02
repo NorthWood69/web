@@ -88,13 +88,14 @@ class SignupForm(forms.Form):
         password = self.cleaned_data['password']
         if password.strip() == '':
             raise forms.ValidationError('The password field can not be empty', code='validation_error')
+        self.raw_passeord = password
         return password
 
     def save(self):
-        user = User.objects.create_user(**self.cleaned_data)
+        user = User(**self.cleaned_data)
         user.save()
-        auth = authenticate(**self.cleaned_data)
-        return auth
+        #auth = authenticate(**self.cleaned_data)
+        return user
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=100, required=False)

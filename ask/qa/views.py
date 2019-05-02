@@ -84,16 +84,35 @@ def ask(request, *args, **kwargs):
 #        return HttpResponseRedirect(url)
 #    return HttpResponseRedirect('/')
 
+#def signup(request):
+#    if request.method == 'POST':
+#        form = SignupForm(request.POST)
+#        if form.is_valid():
+#            user = form.save()
+#            if user is not None:
+#                login(request, user)
+#                return HttpResponseRedirect(reverse('index'))
+#    form = SignupForm()
+#    return render(request, 'signup.html', {'form': form})
+
 def signup(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
+            username = form.cleaned_data["username"]
+            password = form.raw_passeord
+            user = authenticate(username=username, password=password)
+            print(type(user))
             if user is not None:
-                login(request, user)
-                return HttpResponseRedirect(reverse('index'))
-    form = SignupForm()
-    return render(request, 'signup.html', {'form': form})
+                if user.is_active:
+                    login(request, user)
+            return HttpResponseRedirect('/')
+    else:
+        form = SignupForm()
+    return render(request, 'signup.html', {'form': form,
+                                           'user': request.user,
+                                           'session': request.session, })
 
 def login(request):
     if request.method == 'POST':
