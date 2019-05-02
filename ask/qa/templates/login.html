@@ -1,8 +1,19 @@
-{% extends 'base.html' %}
-{% block title %}
-{{ block.super }} Log In{{ page }}
-{% endblock %}
-{% block content %}
-{{ block.super }} 
-{% include "_form.html" %}
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login</title>
+    </head>
+    <body>
+        <form method="post" action="/login/">
+            <fieldset>
+                {% csrf_token %}
+                {{ form.as_p }}
+            </fieldset>
+            <button type="submit">Войти</button>
+        </form>
+        <div>User: {{ user }}</div>
+        <div>Session: {{ session }}</div>
+        <div><a href="/">Return to main page</a></div>
+    </body>
+</html>

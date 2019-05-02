@@ -8,7 +8,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.http import HttpResponse
 from .forms import AskForm, AnswerForm, LoginForm, SignupForm
 from django.contrib.auth import authenticate, login, logout
-from django.core.urlresolvers import reverse
+#from django.core.urlresolvers import reverse
 
 @require_GET
 def index(request, *args, **kwargs):
@@ -112,7 +112,7 @@ def signup(request):
         form = SignupForm()
     return render(request, 'signup.html', {'form': form,
                                            'user': request.user,
-                                           'session': request.session, })
+                                           'sessionid': request.session, })
 
 def login(request):
     if request.method == 'POST':
