@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
-
 {% block title %}
 {{ block.super }} Question {{ questions.id }}{{ page }}
 {% endblock %}
-
 {% block content %}
 {{ block.super }} 
-
 {% if question %}
 <div class="question">
     <h1>Q{{ question.id }}: {{ question.title }}</h1>
@@ -28,11 +25,9 @@
 {% else %}
     <p>No answers posted yet!</p>
 {% endif %}
-
 {% for e in form.non_field_errors %}
     <div class="alert alert-danger">{{ e }}</div>
 {% endfor %}
-
 <form class="form-horizontal" method="POST" action="/answer/">
     <fieldset>
         {% csrf_token %}

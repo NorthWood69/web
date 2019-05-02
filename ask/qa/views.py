@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_GET
 from .models import Question, Answer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponseRedirect
 from django.http import HttpResponse
-from .forms import AskForm, AnswerForm
-#from .forms import AskForm, AnswerForm, LoginForm, SignupForm
-#from django.contrib.auth import authenticate, login, logout
+from .forms import AskForm, AnswerForm, LoginForm, SignupForm
+from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 
 @require_GET
-def idx(request, *args, **kwargs):
+def index(request, *args, **kwargs):
     question_list = Question.objects.order_by('-id')
     paginator, page, limit = paginate(request, question_list)
     context = {
@@ -36,8 +34,8 @@ def popular(request, *args, **kwargs):
 
 def test(request, *args, **kwargs):
     context = {'var1': 1, 'var2': 2}
-    #return render(request, 'index.html', context)
-    return HttpResponse('OK')
+    return render(request, 'index.html', context)
+    #return HttpResponse('OK')
 
 #def question(request, question_id):
 #    q = get_object_or_404(Question, id=question_id)
@@ -59,13 +57,15 @@ def question(request, question_id):
     else:
         form = AnswerForm(initial={'question': q.id})
     return render(request, 'question.html', {'question': q,
-                                             'form': form, })
+                                             'form': form,
+                                             'user': request.user,
+                                             'session': request.session, })
 
 def ask(request, *args, **kwargs):
     if request.method == 'POST':
         form = AskForm(request.POST)
         if form.is_valid():
-            #form._user = request.user
+            form._user = request.user
             question = form.save()
             url = question.get_url()
             return HttpResponseRedirect(url)
@@ -83,6 +83,28 @@ def ask(request, *args, **kwargs):
 #            url = answer.get_url()
 #        return HttpResponseRedirect(url)
 #    return HttpResponseRedirect('/')
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('index'))
+    form = SignupForm()
+    return render(request, 'signup.html', {'form': form})
+
+def login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse('index'))
+    form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
 def paginate(request, lst):
     # get limit

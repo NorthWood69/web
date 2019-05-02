@@ -1,7 +1,6 @@
 {% for e in form.non_field_errors %}
     <div class="alert alert-danger">{{ e }}</div>
 {% endfor %}
-
 <form class="form-horizontal" method="POST" action="">
     <fieldset>
         {% csrf_token %}

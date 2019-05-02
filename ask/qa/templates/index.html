@@ -3,12 +3,38 @@
 {{ block.super }} New Questions - Page {{ questions.number }}{{ page }}
 {% endblock %}
 {% block content %}
-{% for question in questions %}
-    <h3>{{ question.title }}</h3>
-    {% with answers=question.answer_set.count %}
-    <p><a href="/question/{{ question.id }}/">
-        {{ answers }} Answer(s)</a>
-    </p>
-    {% endwith %}
-{% endfor %}
+{{ block.super }} 
+{% if questions %}
+<div class="questions">
+    {% for question in questions %}
+    <div class="question">
+        <h3>Q{{ question.id }}: {{ question.title }}</h3>
+        <h5>Rating: {{ question.rating }}. Added by {{ question.author.username }} on {{ question.added_at }}</h5>
+        <p>{{ question.text }}</p>
+        {# backreference for ForeignKey #}
+        {% with answers=question.answer_set.count %}
+        <p><a href="/question/{{ question.id }}/">
+            {{ answers }} Answer(s)</a>
+        </p>
+        {% endwith %}
+    </div>
+    <hr>
+    {% endfor %}
+</div>
+{% else %}
+<p>No questions added yet. Takie dela, kotany!</p>
+{% endif %}
+<div class="pagination">
+    <span class="step-links">
+        {% if questions.has_previous %}
+        <a href="?page={{ questions.previous_page_number }}&limit={{ limit }}"><<</a>
+        {% endif %}
+        <span class="current">
+            Page {{ questions.number }} of {{ questions.paginator.num_pages }}
+        </span>
+        {% if questions.has_next %}
+        <a href="?page={{ questions.next_page_number }}&limit={{ limit }}">>></a>
+        {% endif %}
+    </span>
+</div>
 {% endblock %}
