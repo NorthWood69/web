@@ -1,64 +1,40 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from django import forms
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
-from .models import Question, Answer
-from datetime import datetime
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from qa.models import Question, Answer
 
 class AskForm(forms.Form):
-    title = forms.CharField(max_length=255)
+    title = forms.CharField(max_length=100)
     text = forms.CharField(widget=forms.Textarea)
 
-    def clean_title(self):
-        title = self.cleaned_data['title']
-        if title.strip() == '':
-            raise forms.ValidationError('The title field can not be empty', code='validation_error')
-        return title
-
-    def clean_text(self):
-        text = self.cleaned_data['text']
-        if text.strip() == '':
-            raise forms.ValidationError('The text field can not be empty', code='validation_error')
-        return text
+    def clean(self):
+        pass
 
     def save(self):
-        if self._user.is_anonymous():
-            self.cleaned_data['author_id'] = 1
-        else:
-            self.cleaned_data['author'] = self._user
         question = Question(**self.cleaned_data)
+        question.author_id = self._user.id
         question.save()
         return question
-
 
 class AnswerForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea)
     question = forms.IntegerField(widget=forms.HiddenInput)
 
-    def clean_text(self):
-        text = self.cleaned_data['text']
-        if text.strip() == '': 
-            raise forms.ValidationError('The text field can not be empty', code='validation_error')
-        return text
-
     def clean_question(self):
+        question_id = self.cleaned_data['question']
         try:
-            question = int(self.cleaned_data['question'])
-        except ValueError:
-            raise forms.ValidationError('Invalid data', code='validation_error')
+            question = Question.objects.get(id=question_id)
+        except Question.DoesNotExist:
+            question = None
         return question
 
+    def clean(self):
+        pass
+
     def save(self):
-        self.cleaned_data['question'] = get_object_or_404(
-            Question,
-            pk=self.cleaned_data['question'])
-        if self._user.is_anonymous():
-            self.cleaned_data['author_id'] = 1
-        else:
-            self.cleaned_data['author'] = self._user
         answer = Answer(**self.cleaned_data)
+        answer.author_id = self._user.id
         answer.save()
         return answer
 
@@ -68,54 +44,49 @@ class SignupForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, required=False)
 
     def clean_username(self):
-        username = self.cleaned_data['username']
-        if username.strip() == '':
-            raise forms.ValidationError('The username field can not be empty', code='validation_error')
+        username = self.cleaned_data.get('username')
+        if not username:
+            raise forms.ValidationError('Не задано имя пользователя')
         try:
             User.objects.get(username=username)
-            raise forms.ValidationError('The username used by another user')
+            raise forms.ValidationError('Такой пользователь уже существует')
         except User.DoesNotExist:
             pass
         return username
 
     def clean_email(self):
-        email = self.cleaned_data['email']
-        if email.strip() == '':
-            raise forms.ValidationError('The email field can not be empty', code='validation_error')
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('Не указан адрес электронной почты')
         return email
 
     def clean_password(self):
-        password = self.cleaned_data['password']
-        if password.strip() == '':
-            raise forms.ValidationError('The password field can not be empty', code='validation_error')
+        password = self.cleaned_data.get('password')
+        if not password:
+            raise forms.ValidationError('Не указан пароль')
         self.raw_passeord = password
-        return password
+        return make_password(password)
 
     def save(self):
         user = User(**self.cleaned_data)
         user.save()
-        #auth = authenticate(**self.cleaned_data)
         return user
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100, required=False)
+    username = forms.CharField( max_length=100, required=False)
     password = forms.CharField(widget=forms.PasswordInput, required=False)
 
     def clean_username(self):
-        username = self.cleaned_data['username']
-        if username.strip() == '':
-            raise forms.ValidationError('The username field can not be empty', code='validation_error')
+        username = self.cleaned_data.get('username')
+        if not username:
+            raise forms.ValidationError('Не задано имя пользователя')
         return username
 
     def clean_password(self):
-        password = self.cleaned_data['password']
-        if password.strip() == '':
-            raise forms.ValidationError('The password field can not be empty', code='validation_error')
+        password = self.cleaned_data.get('password')
+        if not password:
+            raise forms.ValidationError('Не указан пароль')
         return password
-
-#    def save(self):
-#        auth = authenticate(**self.cleaned_data)
-#        return auth
 
     def clean(self):
         username = self.cleaned_data.get('username')
@@ -123,6 +94,6 @@ class LoginForm(forms.Form):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise forms.ValidationError('Wrong password or username')
+            raise forms.ValidationError('Неверное имя пользователя или пароль1')
         if not user.check_password(password):
-            raise forms.ValidationError('Wrong password or username')
+            raise forms.ValidationError('Неверное имя пользователя или пароль2')

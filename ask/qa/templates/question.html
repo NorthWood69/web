@@ -1,45 +1,30 @@
-{% extends 'base.html' %}
-{% block title %}
-{{ block.super }} Question {{ questions.id }}{{ page }}
-{% endblock %}
-{% block content %}
-{{ block.super }} 
-{% if question %}
-<div class="question">
-    <h1>Q{{ question.id }}: {{ question.title }}</h1>
-    <h2>Rating: {{ question.rating }}. Added by {{ question.author.username }} on {{ question.added_at }}</h2>
-    <p>{{ question.text }}</p>
-</div>
-{% endif %}
-<hr>
-{% if answers %}
-<div class="answers">
-    {% for answer in answers %}
-    <div class="answer">
-        <h3>A{{ answer.id }}: {{ answer.author.username }} posted on {{ answer.added_at }}</h3>
-        <p>{{ answer.text }}</p>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ question }}</title>
+</head>
+<body>
+    <h1>{{ question }}</h1>
+    <div>{{ question.text }}, {{ question.author_id }}</div>
     <hr>
+    <ul>
+    {% for answer in question.answer_set.all %}
+        <li>{{ answer }}, {{ answer.author_id }}</li>
     {% endfor %}
-</div>
-{% else %}
-    <p>No answers posted yet!</p>
-{% endif %}
-{% for e in form.non_field_errors %}
-    <div class="alert alert-danger">{{ e }}</div>
-{% endfor %}
-<form class="form-horizontal" method="POST" action="/answer/">
-    <fieldset>
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="control-group {% if field.errors %}has-error{% endif %}">
-            <label class="control-label">{{ field.label }}</label>
-            <div class="controls">{{ field }}</div>
-        </div>
-        {% endfor %}
-    </fieldset>
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
-{% endblock %}
+    </ul>
+    <hr>
+    <form method="post" action="{{ question.get_url }}">
+        <fieldset>
+{% csrf_token %}
+{{ form.as_p }}
+        </fieldset>
+        <button type="submit">Ответить</button>
+    </form>
+    <hr>
+    <div><a href="/ask/">Ask a new question</a></div>
+    <div>User: {{ user }}</div>
+    <div>Session: {{ session }}</div>
+    <div><a href="/">Return to main page</a></div>
+</body>
+</html>
