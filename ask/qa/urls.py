@@ -14,5 +14,5 @@ urlpatterns = [
     url(r'^question/(?P<question_id>[0-9]+)/$', views.question, name='question'),
     url(r'^ask/.*$', views.ask, name='ask'),
     url(r'^popular/.*$', views.popular, name='popular'),
-    url(r'^new/.*$', views.test, name='new'),
+#    url(r'^new/.*$', views.test, name='new'),
 ]
