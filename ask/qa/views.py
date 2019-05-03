@@ -76,15 +76,15 @@ def ask(request):
                                         'user': request.user,
                                         'session': request.session, })
 
-def login(request):
+def log_in(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
-            print(username, password)
+            #print(username, password)
             user = authenticate(username=username, password=password)
-            print(type(user))
+            #print(type(user))
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -103,7 +103,7 @@ def signup(request):
             username = form.cleaned_data["username"]
             password = form.raw_passeord
             user = authenticate(username=username, password=password)
-            print(type(user))
+            #print(type(user))
             if user is not None:
                 if user.is_active:
                     login(request, user)
