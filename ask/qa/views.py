@@ -76,7 +76,7 @@ def ask(request):
                                         'user': request.user,
                                         'session': request.session, })
 
-def login_view(request):
+def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():

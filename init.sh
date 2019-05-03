@@ -16,3 +16,5 @@ mysql -uroot -e "FLUSH PRIVILEGES;"
 
 sudo python ~/web/ask/manage.py makemigrations qa
 sudo python ~/web/ask/manage.py migrate
+#sudo python /home/box/web/ask/manage.py makemigrations qa
+#sudo python /home/box/web/ask/manage.py migrate
