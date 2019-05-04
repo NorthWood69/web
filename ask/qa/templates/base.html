@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
     <head>
         <meta charset="utf-8">
-        <title>{% block title%}Ask Me Anything - {% endblock %}</title>
+        <title>{% block title%}Вопросы и ответы - {% endblock %}</title>
         {% block meta %}
         {% endblock %}
     </head>
     <body>
         {% block content %}
         <nav class="navigation">
-            <a href="/ask/">Ask</a>
-            <a href="/">New</a>
-            <a href="/popular/">Popular</a> |
-            <a href="/signup/">Sign Up</a>
-            <a href="/login/">Log In</a> |
+            <a href="/ask/">Спросить</a> |
+            <a href="/">Новое</a> |
+            <a href="/popular/">Популярное</a> |
+            <a href="/signup/">Регистрация</a> |
             {% if not request.user.is_anonymous %}
-            Current user:
+            Текущий пользователь:
             {{ request.user }}
-            <a href="/logout/">Log Out</a>
+            <a href="/logout/">Выйти</a>
+            {% else %}
+            <a href="/login/">Войти</a>
             {% endif %}
         </nav>
+        <h1>{{ title }}</h1>
         {% endblock %}
         {% block scripts %}
         {% endblock %}

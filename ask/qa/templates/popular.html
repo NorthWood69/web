@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
-{{ block.super }} Popular Questions - Page {{ questions.number }}{{ page }}
+{{ block.super }}Популярные вопросы. Страница {{ questions.number }}{{ page }}
 {% endblock %}
 {% block content %}
 {{ block.super }} 
@@ -8,13 +8,13 @@
 <div class="questions">
     {% for question in questions %}
     <div class="question">
-        <h3>Q{{ question.id }}: {{ question.title }}</h3>
-        <h5>Rating: {{ question.rating }}. Added by {{ question.author.username }} on {{ question.added_at }}</h5>
+        <h3>Вопрос {{ question.id }}: {{ question.title }}</h3>
+        <h5>Рейтинг: {{ question.rating }}. Автор {{ question.author.username }}. Добавлен {{ question.added_at }}</h5>
         <p>{{ question.text }}</p>
         {# backreference for ForeignKey #}
         {% with answers=question.answer_set.count %}
         <p><a href="/question/{{ question.id }}/">
-            {{ answers }} Answer(s)</a>
+            Ответов: {{ answers }}</a>
         </p>
         {% endwith %}
     </div>
@@ -22,7 +22,7 @@
     {% endfor %}
 </div>
 {% else %}
-    <p>No questions added yet. Takie dela, kotany!</p>
+    <p>Пока нет вопросов в базе данных. Будьте первым автором!</p>
 {% endif %}
 <div class="pagination">
     <span class="step-links">
@@ -30,7 +30,7 @@
         <a href="?page={{ questions.previous_page_number }}&limit={{ limit }}"><<</a>
         {% endif %}
         <span class="current">
-            Page {{ questions.number }} of {{ questions.paginator.num_pages }}
+            Страница {{ questions.number }} из {{ questions.paginator.num_pages }}
         </span>
         {% if questions.has_next %}
         <a href="?page={{ questions.next_page_number }}&limit={{ limit }}">>></a>
