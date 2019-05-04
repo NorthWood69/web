@@ -73,14 +73,18 @@ def ask(request):
     return render(request, 'ask.html', context)
 
 def log_in(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user = authenticate(username=username, password=password)
             if user is not None:
-                login(request, user)
-                return HttpResponseRedirect(reverse('index'))
-    form = LoginForm()
+                if user.is_active:
+                    login(request, user)
+            return HttpResponseRedirect(reverse('index'))
+    else:
+        form = LoginForm()
     context = {
         'title': 'Вход на сайт',
         'form': form,
@@ -97,10 +101,15 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
+            username = form.cleaned_data["username"]
+            password = form.raw_passwrd
+            user = authenticate(username=username, password=password)
             if user is not None:
-                login(request, user)
-                return HttpResponseRedirect(reverse('index'))
-    form = SignupForm()
+                if user.is_active:
+                    login(request, user)
+            return HttpResponseRedirect(reverse('index'))
+    else:
+        form = SignupForm()
     context = {
         'title': 'Регистрация пользователя',
         'form': form,

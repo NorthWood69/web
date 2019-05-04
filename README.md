@@ -1,1 +1,1 @@
-# Курс Web-технологии на stepic.org #
+# Курс Web-технологии на stepik.org #

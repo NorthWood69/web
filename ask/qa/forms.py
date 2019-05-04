@@ -2,10 +2,9 @@
 from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from .models import Question, Answer
-from datetime import datetime
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import make_password
 
 class AskForm(forms.Form):
     title = forms.CharField(max_length=255)
@@ -80,29 +79,28 @@ class SignupForm(forms.Form):
         password = self.cleaned_data['password']
         if password.strip() == '':
             raise forms.ValidationError('Поле пароля не может оставаться незаполненным', code='validation_error')
-        self.raw_passeord = password
-        return password
+        self.raw_passwrd = password
+        return make_password(password)
 
     def save(self):
         user = User(**self.cleaned_data)
         user.save()
-        auth = authenticate(**self.cleaned_data)
         return user
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100, required=False)
+    username = forms.CharField( max_length=100, required=False)
     password = forms.CharField(widget=forms.PasswordInput, required=False)
 
     def clean_username(self):
-        username = self.cleaned_data['username']
-        if username.strip() == '':
-            raise forms.ValidationError('Имя пользователя должно быть заполнено', code='validation_error')
+        username = self.cleaned_data.get('username')
+        if not username:
+            raise forms.ValidationError('Не указано имя пользователя')
         return username
 
     def clean_password(self):
-        password = self.cleaned_data['password']
-        if password.strip() == '':
-            raise forms.ValidationError('Поле пароля не может быть незаполненным', code='validation_error')
+        password = self.cleaned_data.get('password')
+        if not password:
+            raise forms.ValidationError('Не указан пароль')
         return password
 
     def clean(self):
@@ -111,6 +109,6 @@ class LoginForm(forms.Form):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise forms.ValidationError('Неправильное имя пользователя или пароль')
+            raise forms.ValidationError('Неверное имя пользователя или пароль')
         if not user.check_password(password):
-            raise forms.ValidationError('Неправильное имя пользователя или пароль')
+            raise forms.ValidationError('Неверное имя пользователя или пароль')
